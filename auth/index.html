@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Signet social: authorization</title>
+<style>
+body{margin:0;background:#14130e;color:#fbfaf7;font:18px/1.5 system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px;box-sizing:border-box}
+main{max-width:720px;width:100%}
+h1{font-size:20px;text-transform:uppercase;letter-spacing:.06em;color:#c9a45a;margin:0 0 12px}
+code{display:block;background:#1e1c15;border:1px solid #77725f;padding:16px;word-break:break-all;font-size:15px;margin:12px 0}
+button{background:#c9a45a;color:#14130e;border:0;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer}
+p{color:#cfccc2}
+</style></head><body><main>
+<h1>Signet social</h1>
+<p id="msg">Authorization result.</p>
+<code id="code">…</code>
+<button id="copy">Copy</button>
+<script>
+const q=new URLSearchParams(location.search);
+const h=new URLSearchParams((location.hash||'').replace(/^#/,''));
+const token=h.get('access_token')||h.get('long_lived_token')||'';
+const code=q.get('code')||h.get('code')||'';
+const state=q.get('state')||h.get('state')||'';
+const err=q.get('error_description')||q.get('error')||h.get('error_description')||h.get('error')||'';
+let value='', msg='';
+if(token){value=token; msg='A '+(state||'')+' access token arrived ('+token.length+' characters). Copy it and paste it back into the chat.';}
+else if(code){value=code; msg='Your '+(state||'')+' authorization code. Copy it and paste it back into the chat.';}
+else{value=err?('Error: '+err):'No code or token in this URL.'; msg='Nothing to copy.';}
+document.getElementById('code').textContent=token?('token received: '+token.slice(0,6)+'…'+token.slice(-4)):value;
+document.getElementById('msg').textContent=msg;
+document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(value);
+try{history.replaceState(null,'',location.pathname);}catch(e){}
+</script></main></body></html>
